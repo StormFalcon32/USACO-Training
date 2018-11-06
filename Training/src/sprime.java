@@ -1,3 +1,4 @@
+
 /*
 ID: benchen1
 LANG: JAVA
@@ -13,7 +14,7 @@ import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
 public class sprime {
-	
+
 	static int n;
 
 	public static void main(String[] args) throws IOException {
@@ -22,7 +23,7 @@ public class sprime {
 		StringTokenizer ln = new StringTokenizer(in.readLine());
 		n = Integer.parseInt(ln.nextToken());
 		for (int i = 0; i < n; i++) {
-			
+
 		}
 		out.close();
 		in.close();
