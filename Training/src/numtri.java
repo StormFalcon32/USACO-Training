@@ -14,14 +14,14 @@ import java.util.StringTokenizer;
 
 public class numtri {
 	
-	static int n;
+	static int ROWS;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader("numtri.in"));
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("numtri.out")));
 		StringTokenizer ln = new StringTokenizer(in.readLine());
-		n = Integer.parseInt(ln.nextToken());
-		for (int i = 0; i < n; i++) {
+		ROWS = Integer.parseInt(ln.nextToken());
+		for (int i = 0; i < ROWS; i++) {
 			
 		}
 		out.close();
