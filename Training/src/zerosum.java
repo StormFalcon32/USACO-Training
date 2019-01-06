@@ -17,7 +17,7 @@ import java.util.StringTokenizer;
 
 public class zerosum {
 
-	static int n;
+	static int n = 7;
 	static ArrayList<String> sols = new ArrayList<String>();
 
 	public static void main(String[] args) throws IOException {
@@ -25,7 +25,7 @@ public class zerosum {
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("zerosum.out")));
 		StringTokenizer ln = new StringTokenizer(in.readLine());
 		n = Integer.parseInt(ln.nextToken());
-		recur(1, 0, 1, new StringBuilder("1"), true);
+		calc(1, new StringBuilder("1"));
 		Collections.sort(sols);
 		for (int i = 0; i < sols.size(); i++) {
 			out.println(sols.get(i));
@@ -34,17 +34,63 @@ public class zerosum {
 		in.close();
 	}
 
-	public static void recur(int at, int sum, int left, StringBuilder soFar, boolean add) {
-		if (at == n) {
-			if (sum + left == 0)
-				sols.add(soFar.substring(0));
+	static boolean check(String s) {
+		int sum = 0;
+		boolean positive = true;
+	    s = s.replaceAll("\\s","");
+	    for (int i = 0; i < s.length(); i++) {
+	    	String curr = s.substring(i, i + 1);
+	    	switch (curr) {
+	    	case "+":
+	    		positive = true;
+	    		break;
+	    	case "-":
+	    		positive = false;
+	    		break;
+	    	default:
+	    		int num = 0;
+	    		while (i < s.length()) {
+	    			curr = s.substring(i, i + 1);
+	    			if (curr.equals("+") || curr.equals("-")) {
+	    				break;
+	    			}
+	    			num = num * 10 + Integer.parseInt(curr);
+	    			i++;
+	    		}
+	    		if (positive) {
+	    			sum += num;
+	    		} else {
+	    			sum -= num;
+	    		}
+	    		i--;
+	    		break;
+	    	}
+	    }
+		if (sum == 0) {
+			return true;
+		}
+		return false;
+	}
+	
+	static StringBuilder undo(StringBuilder s) {
+		return s.delete(s.length() - 2, s.length());
+	}
+	
+	static void calc(int l, StringBuilder s) {
+		if (l == n) {
+			if (check(s.toString())) {
+				sols.add(s.toString());
+			}
 			return;
 		}
-		recur(at + 1, sum + left, (at + 1), soFar.append("+" + (at + 1)), true);
-		soFar.delete(soFar.length() - 2, soFar.length());
-		recur(at + 1, sum + left, -(at + 1), soFar.append("-" + (at + 1)), false);
-		soFar.delete(soFar.length() - 2, soFar.length());
-		recur(at + 1, sum, left * 10 + (add ? (at + 1) : -(at + 1)), soFar.append(" " + (at + 1)), add);
-		soFar.delete(soFar.length() - 2, soFar.length());
+		// Try + then undo
+		calc(l + 1, s.append("+" + (l + 1)));
+		undo(s);
+		// Try - then undo
+		calc(l + 1, s.append("-" + (l + 1)));
+		undo(s);
+		// Try blank then undo
+		calc(l + 1, s.append(" " + (l + 1)));
+		undo(s);
 	}
 }
