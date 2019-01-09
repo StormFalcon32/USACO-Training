@@ -108,6 +108,16 @@ public class maze1 {
 			}
 		}
 		
+		for (int k = 0; k < R * C; k++) {
+			for (int i = 0; i < R * C; i++) {
+				for (int j = 0; j < R * C; j++) {
+					if (dp[i][k] + dp[k][j] < dp[i][j]) {
+						dp[i][j] = dp[i][k] + dp[k][j];
+					}
+				}
+			}
+		}
+		
 		out.close();
 		in.close();
 	}
