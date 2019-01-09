@@ -49,6 +49,13 @@ public class ttwo {
 		}
 		int t;
 		for (t = 0; t < 401; t++) {
+			// Theoretically there are 10 * 10 * 4 * 10 * 10 * 4 = 160,000 different states,
+			// 100 spots and 4 directions for farmer, 100 spots and 4 directions for cow,
+			// but in practice after 400 units of time, if farmer and cow haven't met, it's
+			// most likely a cycle
+
+			// However, you could probably use states to check for infinite cycle, or just
+			// loop for 160,000 times and still run in time
 			if (move() == 2) {
 				break;
 			}
@@ -82,7 +89,7 @@ public class ttwo {
 		}
 
 		int cDir = cow.dir;
-		
+
 		newR = cow.r + dirR[cDir];
 		newC = cow.c + dirC[cDir];
 
