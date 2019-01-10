@@ -1,10 +1,3 @@
-
-/*
-ID: benchen1
-LANG: JAVA
-TASK: maze1
-*/
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -13,87 +6,88 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
+/*
+ID: benchen1
+LANG: JAVA
+TASK: maze1
+*/
+
 public class maze1 {
 
-	static int R;
-	static int C;
+	static short R;
+	static short C;
+	static short V;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader("maze1.in"));
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("maze1.out")));
 		StringTokenizer ln = new StringTokenizer(in.readLine());
-		C = Integer.parseInt(ln.nextToken());
-		R = Integer.parseInt(ln.nextToken());
-		String[][] input = new String[2 * R + 1][2 * C + 1];
-		int[][] dp = new int[R * C][R * C];
-		int[] exits = new int[2];
-		
+		C = Short.parseShort(ln.nextToken());
+		R = Short.parseShort(ln.nextToken());
+		V = (short) (R * C);
+		short[][] adj = new short[V][V];
+		short[] exits = new short[2];
+
 		int ext = 0;
-		
-		for (int i = 0; i < R * C; i++) {
-			for (int j = 0; j < R * C; j++) {
-				dp[i][j] = 1 << 20;
-			}
-		}
 
 		for (int i = 0; i < 2 * R + 1; i++) {
 			String str = in.readLine();
-			for (int j = 0; j < 2 * C + 1; j++) {
-				input[i][j] = str.substring(j, j + 1);
-			}
-		}
-		
-		for (int i = 0; i < 2 * R + 1; i++) {
-			int newR = i;
-			int newC = -1;
-			if (input[i][0].equals(" ")) {
-				newC = 1;
-				exits[ext] = findVNum(newR, newC);
-				ext = 1;
-			} else if (input[i][2 * C].equals(" ")) {
-				newC = 2 * C - 1;
-				exits[ext] = findVNum(newR, newC);
-				ext = 1;
-			}
-		}
-		
-		for (int j = 0; j < 2 * C + 1; j++) {
-			int newR = -1;
-			int newC = j;
-			if (input[0][j].equals(" ")) {
-				newR = 1;
-				exits[ext] = findVNum(newR, newC);
-				ext = 1;
-			} else if (input[2 * R][j].equals(" ")) {
-				newR = 2 * R - 1;
-				exits[ext] = findVNum(newR, newC);
-				ext = 1;
-			}
-		}
-		
-		
-		for (int i = 1; i < 2 * R; i++) {
-			if (i == 0 || i == 2 * R) {
+			if (i == 0) {
+				for (int j = 0; j < 2 * C + 1; j++) {
+					int newR = -1;
+					int newC = j;
+					String curr = str.substring(j, j + 1);
+					if (curr.equals(" ")) {
+						newR = 1;
+						exits[ext] = findVNum(newR, newC);
+						ext = 1;
+					}
+				}
 				continue;
 			}
-			for (int j = 1; j < 2 * C; j++) {
-
-				String curr = input[i][j];
-				if (i == 6) {
-					System.out.println();
+			if (i == 2 * R) {
+				for (int j = 0; j < 2 * C + 1; j++) {
+					int newR = -1;
+					int newC = j;
+					String curr = str.substring(j, j + 1);
+					if (curr.equals(" ")) {
+						newR = 2 * R - 1;
+						exits[ext] = findVNum(newR, newC);
+						ext = 1;
+					}
 				}
-				
-				if (j == 0 || j == 2 * C) {
+				continue;
+			}
+			for (int j = 0; j < 2 * C + 1; j++) {
+				String curr = str.substring(j, j + 1);
+				if (j == 0) {
+					int newR = i;
+					int newC = -1;
+					if (curr.equals(" ")) {
+						newC = 1;
+						exits[ext] = findVNum(newR, newC);
+						ext = 1;
+					}
 					continue;
 				}
-				
+				if (j == 2 * C) {
+					int newR = i;
+					int newC = -1;
+					if (curr.equals(" ")) {
+						newC = 2 * C - 1;
+						exits[ext] = findVNum(newR, newC);
+						ext = 1;
+					}
+					continue;
+				}
+
 				if (i % 2 == 0) {
 					// Horizontal fence
 					if (curr.equals(" ")) {
 						int a = findVNum(i - 1, j);
 						int b = findVNum(i + 1, j);
-						dp[a][b] = 1;
-						dp[b][a] = 1;
+						adj[a][b] = 1;
+						adj[b][a] = 1;
 					}
 
 				} else if (j % 2 == 0) {
@@ -101,30 +95,60 @@ public class maze1 {
 					if (curr.equals(" ")) {
 						int a = findVNum(i, j - 1);
 						int b = findVNum(i, j + 1);
-						dp[a][b] = 1;
-						dp[b][a] = 1;
+						adj[a][b] = 1;
+						adj[b][a] = 1;
 					}
 				}
 			}
 		}
-		
-		for (int k = 0; k < R * C; k++) {
-			for (int i = 0; i < R * C; i++) {
-				for (int j = 0; j < R * C; j++) {
-					if (dp[i][k] + dp[k][j] < dp[i][j]) {
-						dp[i][j] = dp[i][k] + dp[k][j];
-					}
-				}
-			}
+
+		// We now have an adjacency matrix representation of the graph
+		// Do Dijkstra's from each exit
+		short[] first = dijkstra(adj, exits[0]);
+		short[] second = dijkstra(adj, exits[1]);
+
+		int furthest = 0;
+		for (int i = 0; i < V; i++) {
+			furthest = Math.max(furthest, Math.min(first[i], second[i]));
 		}
-		
+		System.out.println(furthest + 1);
 		out.close();
 		in.close();
 	}
-	
-	static int findVNum(int r, int c) {
+
+	static short[] dijkstra(short[][] adj, int root) {
+		short[] dist = new short[V];
+		for (int i = 0; i < V; i++) {
+			dist[i] = 4000;
+		}
+		boolean[] inSet = new boolean[V];
+		dist[root] = 0;
+
+		for (int k = 0; k < V - 1; k++) {
+
+			int u = -1;
+			int min = Integer.MAX_VALUE;
+			for (int i = 0; i < V; i++) {
+				if (!inSet[i] && dist[i] < min) {
+					u = i;
+					min = dist[i];
+				}
+			}
+			inSet[u] = true;
+
+			for (int v = 0; v < V; v++) {
+				short distThroughU = (short) (dist[u] + adj[u][v]);
+				if (!inSet[v] && adj[u][v] != 0 && distThroughU < dist[v]) {
+					dist[v] = distThroughU;
+				}
+			}
+		}
+		return dist;
+	}
+
+	static short findVNum(int r, int c) {
 		int newR = (r - 1) / 2;
 		int newC = (c - 1) / 2;
-		return newR * C + newC;
+		return (short) (newR * C + newC);
 	}
 }
