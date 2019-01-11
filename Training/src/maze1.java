@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 
 /*
@@ -18,6 +19,7 @@ public class maze1 {
 	static short C;
 	static short V;
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader("maze1.in"));
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("maze1.out")));
@@ -25,10 +27,13 @@ public class maze1 {
 		C = Short.parseShort(ln.nextToken());
 		R = Short.parseShort(ln.nextToken());
 		V = (short) (R * C);
-		short[][] adj = new short[V][V];
+		LinkedList<Short>[] adj = new LinkedList[V];
 		short[] exits = new short[2];
-
 		int ext = 0;
+		
+		for (int i = 0; i < V; i++) {
+			adj[i] = new LinkedList<Short>();
+		}
 
 		for (int i = 0; i < 2 * R + 1; i++) {
 			String str = in.readLine();
@@ -84,19 +89,19 @@ public class maze1 {
 				if (i % 2 == 0) {
 					// Horizontal fence
 					if (curr.equals(" ")) {
-						int a = findVNum(i - 1, j);
-						int b = findVNum(i + 1, j);
-						adj[a][b] = 1;
-						adj[b][a] = 1;
+						short a = findVNum(i - 1, j);
+						short b = findVNum(i + 1, j);
+						adj[a].add(b);
+						adj[b].add(a);
 					}
 
 				} else if (j % 2 == 0) {
 					// Vertical fence
 					if (curr.equals(" ")) {
-						int a = findVNum(i, j - 1);
-						int b = findVNum(i, j + 1);
-						adj[a][b] = 1;
-						adj[b][a] = 1;
+						short a = findVNum(i, j - 1);
+						short b = findVNum(i, j + 1);
+						adj[a].add(b);
+						adj[b].add(a);
 					}
 				}
 			}
@@ -111,12 +116,12 @@ public class maze1 {
 		for (int i = 0; i < V; i++) {
 			furthest = Math.max(furthest, Math.min(first[i], second[i]));
 		}
-		System.out.println(furthest + 1);
+		out.println(furthest + 1);
 		out.close();
 		in.close();
 	}
 
-	static short[] dijkstra(short[][] adj, int root) {
+	static short[] dijkstra(LinkedList<Short>[] adj, int root) {
 		short[] dist = new short[V];
 		for (int i = 0; i < V; i++) {
 			dist[i] = 4000;
@@ -136,9 +141,9 @@ public class maze1 {
 			}
 			inSet[u] = true;
 
-			for (int v = 0; v < V; v++) {
-				short distThroughU = (short) (dist[u] + adj[u][v]);
-				if (!inSet[v] && adj[u][v] != 0 && distThroughU < dist[v]) {
+			for (short v = 0; v < V; v++) {
+				short distThroughU = (short) (dist[u] + 1);
+				if (!inSet[v] && adj[u].contains(v) && distThroughU < dist[v]) {
 					dist[v] = distThroughU;
 				}
 			}
