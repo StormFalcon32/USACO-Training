@@ -28,16 +28,48 @@ public class cowtour {
 			int y = Integer.parseInt(ln.nextToken());
 			pastures[i] = new Pasture(x, y);
 		}
-		int[][] adjMat = new int[N][N];
+		double[][] distance = new double[N][N];
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				distance[i][j] = 1 << 20;
+			}
+			distance[i][i] = 0;
+		}
 		for (int i = 0; i < N; i++) {
 			String s = in.readLine();
 			for (int j = 0; j < N; j++) {
-				adjMat[i][j] = Integer.parseInt(s.substring(j, j + 1));
+				int a = Integer.parseInt(s.substring(j, j + 1));
+				if (a == 1) {
+					distance[i][j] = dist(pastures[i], pastures[j]);
+				}
 			}
 		}
 		
+		for (int k = 0; k < N; k++) {
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					if (distance[i][k] + distance[k][j] < distance[i][j]) {
+						distance[i][j] = distance[i][k] + distance[k][j];
+					}
+				}
+			}
+		}
+		double best = Double.MAX_VALUE;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (i == j) {
+					continue;
+				}
+				best = Math.min(best, distance[i][j]);
+			}
+		}
+		System.out.println(best);
 		out.close();
 		in.close();
+	}
+	
+	static double dist(Pasture a, Pasture b) {
+		return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
 	}
 	
 	static class Pasture {
