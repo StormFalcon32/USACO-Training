@@ -15,6 +15,7 @@ import java.util.StringTokenizer;
 public class cowtour {
 	
 	static int N;
+	static int INF = 1 << 20;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader("cowtour.in"));
@@ -31,7 +32,7 @@ public class cowtour {
 		double[][] distance = new double[N][N];
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				distance[i][j] = 1 << 20;
+				distance[i][j] = INF;
 			}
 			distance[i][i] = 0;
 		}
@@ -54,16 +55,25 @@ public class cowtour {
 				}
 			}
 		}
+		// worstPossible[i] is the longest path you can take starting at i
+		double[] worstPossible = new double[N];
 		double best = Double.MAX_VALUE;
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				if (i == j) {
-					continue;
-				}
-				best = Math.min(best, distance[i][j]);
+				worstPossible[i] = (distance[i][j] != INF) ? Math.max(worstPossible[i], distance[i][j]) : worstPossible[i];
 			}
 		}
-		System.out.println(best);
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (distance[i][j] == INF) {
+					best = Math.min(best, worstPossible[i] + worstPossible[j] + dist(pastures[i], pastures[j]));
+				}
+			}
+		}
+		for (int i = 0; i < N; i++) {
+			best = Math.max(best, worstPossible[i]);
+		}
+		out.println(String.format("%.6f", best));
 		out.close();
 		in.close();
 	}
