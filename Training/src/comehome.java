@@ -55,8 +55,8 @@ public class comehome {
 			if (l.equals("Z")) {
 				lNum = 25;
 			}
-			adjMat[fNum][lNum] = dist;
-			adjMat[lNum][fNum] = dist;
+			adjMat[fNum][lNum] = Math.min(dist, adjMat[fNum][lNum]);
+			adjMat[lNum][fNum] = Math.min(dist, adjMat[lNum][fNum]);
 		}
 		int[] distances = dijkstra(adjMat, 25);
 		String bestLetter = "";
