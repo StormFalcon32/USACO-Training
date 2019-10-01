@@ -18,42 +18,50 @@ public class range {
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("range.out")));
 		int N = Integer.parseInt(in.readLine());
 		boolean[][] field = new boolean[N][N];
-		boolean[][][] dp = new boolean[N][N][N + 1];
-		// dp[r][c][l] is whether there is a square with top left corner at (r, c) and l length sides
-		boolean[][][] dpCross = new boolean[N][N][N + 1];
-		// dpCross[r][c][l] is whether there is a cross centered at (r, c) with length l
+		int[][] dp = new int[N][N];
+		// dp[r][c] is number of squares with top left corner at (r, c)
 		for (int i = 0; i < N; i++) {
 			String line = in.readLine();
 			for (int j = 0; j < N; j++) {
 				field[i][j] = Integer.parseInt(line.substring(j, j + 1)) == 1;
 			}
 		}
-		for (int r = 0; r < N; r++) {
-			for (int c = 0; c < N; c++) {
-				dp[r][c][1] = field[r][c];
-				dpCross[r][c][1] = field[r][c];
-			}
+		for (int i = 0; i < N; i++) {
+			dp[N - 1][i] = field[N - 1][i] ? 1 : 0;
+			dp[i][N - 1] = field[i][N - 1] ? 1 : 0;
 		}
-		for (int l = 2; l <= N; l++) {
-			int count = 0;
-			for (int r = 0; r + l <= N; r++) {
-				for (int c = 0; c + l <= N; c++) {
-					if (l % 2 == 0) {
-						dp[r][c][l] = dp[r][c][l / 2] && dp[r + (l / 2)][c][l / 2] && dp[r][c + (l / 2)][l / 2] && dp[r + (l / 2)][c + (l / 2)][l / 2];
-					} else {
-						boolean cross = field[r + (l / 2)][c] && field[r + (l / 2)][c + l - 1] && field[r][c + (l / 2)] && field[r + l - 1][c + (l / 2)] && dpCross[r + (l / 2)][c + (l / 2)][l - 2];
-						dpCross[r + (l / 2)][c + (l / 2)][l] = cross;
-						dp[r][c][l] = dp[r][c][l / 2] && dp[r + (l / 2) + 1][c][l / 2] && dp[r][c + (l / 2) + 1][l / 2] && dp[r + (l / 2) + 1][c + (l / 2) + 1][l / 2] && cross;
+		for (int r = N - 2; r >= 0; r--) {
+			for (int c = N - 2; c >= 0; c--) {
+				if (field[r][c]) {
+					int borders = 0;
+					for (int i = 1; i <= dp[r + 1][c + 1]; i++) {
+						if (field[r][c + i] && field[r + i][c]) {
+							borders++;
+						} else {
+							break;
+						}
 					}
-					if (dp[r][c][l]) {
-						count++;
-					}
+					dp[r][c] = Math.min(borders, dp[r + 1][c + 1]) + 1;
 				}
 			}
-			if (count == 0) {
+		}
+		int[] count = new int[N + 1];
+		for (int r = 0; r < N; r++) {
+			for (int c = 0; c < N; c++) {
+				count[dp[r][c]]++;
+			}
+		}
+		int[] sums = new int[N + 1];
+		sums[N] = count[N];
+		for (int i = N - 1; i >= 0; i--) {
+			sums[i] = sums[i + 1] + count[i];
+		}
+		for (int i = 2; i < N + 1; i++) {
+			int x = sums[i];
+			if (x == 0) {
 				break;
 			}
-			out.println(l + " " + count);
+			out.println(i + " " + sums[i]);
 		}
 		out.close();
 		in.close();
