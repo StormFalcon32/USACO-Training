@@ -14,8 +14,7 @@ import java.util.StringTokenizer;
 
 public class gift1 {
 
-	public static void main(String[] args) throws IOException{
-		// TODO Auto-generated method stub
+	public static void main(String[] args) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader("gift1.in"));
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("gift1.out")));
 		StringTokenizer ln = new StringTokenizer(in.readLine());
@@ -53,20 +52,20 @@ public class gift1 {
 				names[currIndex].netChange -= money - leftOver;
 				for (int j = 0; j < numRecipients; j++) {
 					names[recipients[j]].netChange += each;
-				}	
+				}
 			}
 		}
 		for (int i = 0; i < n; i++) {
 			out.println(names[i].name + " " + names[i].netChange);
 		}
 		in.close();
-		out.close();		
+		out.close();
 	}
-	
+
 	static class Person {
 		String name;
 		int netChange;
-		
+
 		public Person(String a, int b) {
 			name = a;
 			netChange = b;

@@ -19,19 +19,19 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class butter {
-	
+
 	static final int INF = Integer.MAX_VALUE;
-	
+
 	int N;
 	int P;
 	int C;
-	
+
 	public butter(int N, int P, int C) {
 		this.N = N;
 		this.P = P;
 		this.C = C;
 	}
-	
+
 	public static void main(String[] args) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader("butter.in"));
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("butter.out")));
@@ -71,7 +71,7 @@ public class butter {
 		out.close();
 		in.close();
 	}
-	
+
 	public long[] dijkstra(LinkedList<ButterEdge>[] adjList, int root) {
 		Queue<ButterNode> heap = new PriorityQueue<ButterNode>();
 		long[] dist = new long[P];
@@ -79,7 +79,7 @@ public class butter {
 		boolean[] inSet = new boolean[P];
 		heap.add(new ButterNode(root, 0));
 		dist[root] = 0;
-		
+
 		while (!heap.isEmpty()) {
 			int u = heap.poll().num;
 			inSet[u] = true;
@@ -105,15 +105,14 @@ public class butter {
 class ButterNode implements Comparable<ButterNode> {
 	int num;
 	long dist;
-	
+
 	public ButterNode(int num, long dist) {
 		this.num = num;
 		this.dist = dist;
 	}
-	
+
 	@Override
 	public int compareTo(ButterNode other) {
-		// TODO Auto-generated method stub
 		if (this.dist == other.dist) {
 			return Integer.compare(this.num, other.num);
 		}
@@ -124,7 +123,7 @@ class ButterNode implements Comparable<ButterNode> {
 class ButterEdge {
 	int other;
 	int weight;
-	
+
 	public ButterEdge(int o, int w) {
 		other = o;
 		weight = w;

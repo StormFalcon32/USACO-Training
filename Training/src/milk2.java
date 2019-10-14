@@ -16,8 +16,7 @@ import java.util.TreeSet;
 
 public class milk2 {
 
-	public static void main(String[] args) throws IOException{
-		// TODO Auto-generated method stub
+	public static void main(String[] args) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader("milk2.in"));
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("milk2.out")));
 		StringTokenizer ln = new StringTokenizer(in.readLine());
@@ -61,22 +60,22 @@ public class milk2 {
 		}
 		out.println(milkTime + " " + biggestGap);
 		in.close();
-		out.close();		
+		out.close();
 	}
-	
+
 	static class State implements Comparable<State> {
 		int time;
 		int cow;
-		
+
 		public State(int a, int b) {
 			time = a;
 			cow = b;
 		}
+
 		@Override
 		public int compareTo(State other) {
-			// TODO Auto-generated method stub
 			return Integer.compare(this.time, other.time);
 		}
-		
+
 	}
 }
