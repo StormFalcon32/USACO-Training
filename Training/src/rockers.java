@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
 public class rockers {
-	
+
 	public static void main(String[] args) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader("rockers.in"));
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("rockers.out")));
