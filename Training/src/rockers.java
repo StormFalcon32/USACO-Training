@@ -10,7 +10,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class rockers {
@@ -28,43 +27,33 @@ public class rockers {
 		T = Integer.parseInt(tk.nextToken());
 		M = Integer.parseInt(tk.nextToken());
 		dp = new int[N][M * T + 1];
-		for (int i = 0; i < N; i++) {
-			Arrays.fill(dp[i], -1);
-		}
 		discs = new int[N];
 		tk = new StringTokenizer(in.readLine());
 		for (int i = 0; i < N; i++) {
 			discs[i] = Integer.parseInt(tk.nextToken());
 		}
-		out.println(recurse(0, T * M, 0));
+		int ans = 0;
+		for (int x = 0; x < 1 << N; x++) {
+			int sum = 0;
+			int time = T * M;
+			for (int i = 0; i < N; i++) {
+				if ((x & (1 << i)) == 1 << i) {
+					int tOnDisc = time % T;
+					if (discs[i] > tOnDisc) {
+						time -= discs[i] + tOnDisc;
+					} else {
+						time -= discs[i];
+					}
+					sum++;
+				}
+			}
+			if (time < 0) {
+				continue;
+			}
+			ans = Math.max(ans, sum);
+		}
+		out.println(ans);
 		out.close();
 		in.close();
-	}
-
-	static int recurse(int ind, int time, int numDiscs) {
-		if (ind >= N) {
-			return numDiscs;
-		}
-		if (time <= 0) {
-			return numDiscs;
-		}
-		if (dp[ind][time] != -1) {
-			return dp[ind][time];
-		}
-		int timeLeft = 0;
-		int timeOnDisc = time % T;
-		if (discs[ind] > timeOnDisc) {
-			timeLeft = time - timeOnDisc - discs[ind];
-		} else {
-			timeLeft = time - discs[ind];
-		}
-		int ans = 0;
-		if (discs[ind] > time) {
-			ans = recurse(ind + 1, time, numDiscs);
-		} else {
-			ans = Math.max(recurse(ind + 1, time, numDiscs), recurse(ind + 1, timeLeft, numDiscs + 1));
-		}
-		dp[ind][time] = ans;
-		return ans;
 	}
 }
