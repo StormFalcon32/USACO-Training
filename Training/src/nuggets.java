@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 
 public class nuggets {
 
@@ -18,66 +19,58 @@ public class nuggets {
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("nuggets.out")));
 		int N = Integer.parseInt(in.readLine());
 		int[] input = new int[N];
-		boolean[] redundant = new boolean[N];
-		int numRedundant = 0;
-		int max = 0;
 		for (int i = 0; i < N; i++) {
 			input[i] = Integer.parseInt(in.readLine());
-			max = Math.max(max, input[i]);
 		}
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				if (i == j) {
-					continue;
-				}
-				if (Math.max(input[i], input[j]) % Math.min(input[i], input[j]) == 0) {
-					redundant[input[i] > input[j] ? i : j] = true;
-					numRedundant++;
-				}
-			}
-		}
-		numRedundant /= 2;
-		N -= numRedundant;
-		int[] boxes = new int[N];
-		int ind = 0;
-		for (int i = 0; i < N + numRedundant; i++) {
-			if (!redundant[i]) {
-				boxes[ind] = input[i];
-				ind++;
-			}
-		}
-		boolean[] dp = new boolean[max + 1];
-		for (int i = 0; i < N; i++) {
-			int multiple = max / boxes[i];
-			for (int j = 0; j <= multiple; j++) {
-				dp[boxes[i] * j] = true;
-			}
-		}
-		int lastImpossible = 0;
-		for (int i = 0; i < max + 1; i++) {
-			if (!dp[i]) {
-				lastImpossible = i;
-			}
-		}
-		for (int i = max + 1; i < 2000000001; i++) {
-			if (i - lastImpossible > max) {
+		int gcd = input[0];
+		for (int i = 1; i < N; ++i) {
+			gcd = gcd(gcd, input[i]);
+			if (gcd == 1) {
 				break;
 			}
-			for (int j = 0; j < max; j++) {
-				dp[j] = dp[j + 1];
-			}
-			boolean possible = false;
-			for (int j = 0; j < N; j++) {
-				if (dp[max - boxes[j]]) {
-					possible = true;
-					break;
+		}
+		if (gcd != 1 || input.length == 1) {
+			out.println(0);
+			in.close();
+			out.close();
+			return;
+		}
+
+		Arrays.sort(input);
+		int max = input[N - 1] * input[N - 2] * gcd(input[N - 1], input[N - 2]);
+		boolean[] dp = new boolean[max + 1];
+		dp[0] = true;
+		for (int i = 0; i < N; i++) {
+			for (int j = input[i]; j <= max; j++) {
+				if (dp[j - input[i]]) {
+					dp[j] = true;
 				}
 			}
-			dp[max] = possible;
-			lastImpossible = !possible ? i : lastImpossible;
 		}
-		out.println(lastImpossible);
+
+		for (int i = max; i > 0; i--) {
+			if (!dp[i]) {
+				out.println(i);
+				break;
+			}
+		}
 		out.close();
 		in.close();
+	}
+
+	static int gcd(int a, int b) {
+		if (a == 0) {
+			return b;
+		}
+		if (b == 0) {
+			return a;
+		}
+		if (a == b) {
+			return a;
+		}
+		if (a > b) {
+			return gcd(a - b, b);
+		}
+		return gcd(a, b - a);
 	}
 }
